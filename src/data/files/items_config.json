@@ -1,0 +1,110 @@
+{
+  "potions": [
+    {
+      "name": "Health Potion",
+      "type": "elixir",
+      "stat_affected": "max_health",
+      "amount": 20,
+      "duration": 10
+    },
+    {
+      "name": "Strength Potion",
+      "type": "elixir",
+      "stat_affected": "strength",
+      "amount": 5,
+      "duration": 15
+    },
+    {
+      "name": "Dexterity Potion",
+      "type": "elixir",
+      "stat_affected": "dexterity",
+      "amount": 5,
+      "duration": 15
+    }
+  ],
+  "scrolls": [
+    {
+      "name": "Scroll of Life",
+      "type": "scroll",
+      "stat_affected": "max_health",
+      "amount": 10,
+      "duration": 0
+    },
+    {
+      "name": "Scroll of Power",
+      "type": "scroll",
+      "stat_affected": "strength",
+      "amount": 2,
+      "duration": 0
+    },
+    {
+      "name": "Scroll of Agility",
+      "type": "scroll",
+      "stat_affected": "dexterity",
+      "amount": 2,
+      "duration": 0
+    }
+  ],
+  "food": [
+    {
+      "name": "Apple",
+      "type": "food",
+      "stat_affected": "health",
+      "amount": 10,
+      "duration": 0
+    },
+    {
+      "name": "Meat",
+      "type": "food",
+      "stat_affected": "health",
+      "amount": 25,
+      "duration": 0
+    }
+  ],
+  "weapons": [
+    {
+      "name": "Dagger",
+      "type": "weapon",
+      "stat_affected": "strength",
+      "amount": 2,
+      "duration": 0
+    },
+    {
+      "name": "Short Sword",
+      "type": "weapon",
+      "stat_affected": "strength",
+      "amount": 4,
+      "duration": 0
+    },
+    {
+      "name": "Long Sword",
+      "type": "weapon",
+      "stat_affected": "strength",
+      "amount": 7,
+      "duration": 0
+    },
+    {
+      "name": "Battle Axe",
+      "type": "weapon",
+      "stat_affected": "strength",
+      "amount": 10,
+      "duration": 0
+    }
+  ],
+  "treasures": [
+    {
+      "name": "Gold Coin",
+      "type": "treasure",
+      "stat_affected": "value",
+      "amount": 10,
+      "duration": 0
+    },
+    {
+      "name": "Gem",
+      "type": "treasure",
+      "stat_affected": "value",
+      "amount": 50,
+      "duration": 0
+    }
+  ]
+}

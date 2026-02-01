@@ -1,0 +1,38 @@
+{
+  "zombie": {
+    "max_health": 20,
+    "strength": 10,
+    "dexterity": 5,
+    "hostility": 5
+  },
+  "vampire": {
+    "max_health": 30,
+    "strength": 10,
+    "dexterity": 15,
+    "hostility": 10
+  },
+  "ghost": {
+    "max_health": 10,
+    "strength": 5,
+    "dexterity": 15,
+    "hostility": 5
+  },
+  "ogre": {
+    "max_health": 40,
+    "strength": 20,
+    "dexterity": 5,
+    "hostility": 7
+  },
+  "snake_mage": {
+    "max_health": 15,
+    "strength": 8,
+    "dexterity": 20,
+    "hostility": 10
+  },
+  "mimic": {
+    "max_health": 30,
+    "strength": 5,
+    "dexterity": 15,
+    "hostility": 3
+  }
+}
