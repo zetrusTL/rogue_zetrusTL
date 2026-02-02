@@ -17,7 +17,8 @@ type Render struct {
 	height        int
 	mode2D        bool
 	running       bool
-	fogOfWar      *FogOfWar //туман
+	fogOfWar      *FogOfWar //туман Load session, err := r.gameRoot.LoadLastGame()
+
 	//меню
 	showMenu      bool
 	menuItems     []string
@@ -61,9 +62,9 @@ func NewRender(game presentation.GameSession, gameRoot presentation.Game, width,
 		mainMenuIndex: 0,
 		menuItems: func() []string {
 			if gameRoot != nil {
-				return []string{"Продолжить", "Новая игра", "Загрузить", "Инвентарь", "Статистика", "Сохранить", "Выйти"}
+				return []string{"Продолжить", "Новая игра", "Загрузить", "Инвентарь", "Статистика", "Выйти"}
 			}
-			return []string{"Продолжить", "Инвентарь", "Статистика", "Сохранить", "Выйти"}
+			return []string{"Продолжить", "Инвентарь", "Статистика", "Выйти"}
 	}(),
 	}
 	r.moveCooldown = 90 * time.Millisecond
@@ -392,15 +393,13 @@ func (r *Render) drawGameOver() {
 }
 
 func (r *Render) refreshMainMenuItems() {
-	items := []string{"Начать новую игру"}
+	items := []string{"Новая игра"}
 	if r.gameRoot != nil && r.gameRoot.HasSavedGame() {
 		items = append(items, "Загрузить сохранение")
 	}
-	items = append(items, "Статистика", "Выйти из игры")
+	items = append(items, "Статистика", "Выход")
 	r.mainMenuItems = items
-	if r.mainMenuIndex >= len(r.mainMenuItems) {
-		r.mainMenuIndex = 0
-	}
+
 }
 
 func (r *Render) drawMainMenu() {
@@ -424,6 +423,11 @@ func (r *Render) drawMainMenu() {
 		r.drawText(x+5, yy, item, tcell.ColorWhite)
 	}
 
+	if len(r.messages) > 0 {
+		msg := r.messages[len(r.messages)-1]
+		r.drawTextCentered(y+height-3, msg, tcell.ColorRed)
+	}
+
 	help := "[↑↓] Выбор   [Enter] Выбрать   [ESC] Выход"
 	r.drawTextCentered(y+height-2, help, tcell.ColorDarkGray)
 }
@@ -442,50 +446,64 @@ func (r *Render) handleMainMenuInput(ev *tcell.EventKey) {
 }
 
 func (r *Render) executeMainMenuAction() {
+	if r.gameRoot == nil {
+		r.messages = append(r.messages, "Ошибка: gameRoot == nil")
+		return
+	}
+	if r.mainMenuIndex < 0 || r.mainMenuIndex >= len(r.mainMenuItems) {
+		return
+	}
+
 	item := r.mainMenuItems[r.mainMenuIndex]
 
 	switch item {
-	case "Начать новую игру":
-		if r.gameRoot == nil {
-			return
-		}
+
+	case "Начать новую игру", "Новая игра":
 		session, err := r.gameRoot.StartNewGame("Player")
 		if err != nil {
+			r.messages = append(r.messages, "Не удалось начать новую игру: "+err.Error())
 			return
 		}
-		r.game = session
-		r.showMainMenu = false
-		r.showStats = false
-		r.statsFromMain = false
-		r.showInventory = false
-		r.showMenu = false
-		r.fogOfWar = nil
-		r.lastLevel = nil
-		r.messages = nil
+		r.applySession(session)
+		return
 
-	case "Загрузить сохранение":
-		if r.gameRoot == nil || !r.gameRoot.HasSavedGame() {
+	case "Загрузить сохранение", "Загрузить":
+		if !r.gameRoot.HasSavedGame() {
+			r.messages = append(r.messages, "Сохранение не найдено")
 			return
 		}
 		session, err := r.gameRoot.LoadLastGame()
 		if err != nil {
+			r.messages = append(r.messages, "Не удалось загрузить: "+err.Error())
 			return
 		}
-		r.game = session
-		r.showMainMenu = false
-		r.showStats = false
-		r.statsFromMain = false
-		r.showInventory = false
-		r.showMenu = false
-		r.fogOfWar = nil
-		r.lastLevel = nil
-		r.messages = nil
+		r.applySession(session)
+		return
 
 	case "Статистика":
 		r.showStats = true
 		r.statsFromMain = true
+		return
 
-	case "Выйти из игры":
+	case "Выйти":
 		r.Stop()
+		return
 	}
 }
+
+func (r *Render) applySession(session presentation.GameSession) {
+	r.game = session
+
+	r.showMainMenu = false
+
+	r.showStats = false
+	r.statsFromMain = false
+	r.showInventory = false
+	r.showMenu = false
+	r.showItemSelect = false 
+	r.fogOfWar = nil
+	r.lastLevel = nil
+
+	r.messages = nil
+}
+

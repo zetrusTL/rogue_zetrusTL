@@ -151,7 +151,7 @@ func (g *GameService) EquipWeapon(index int) {
 	}
 
 	if indexToRemove != -1 {
-		err := g.DropItem(entity.ItemWeapon, indexToRemove)
+		err := g.dropItem(entity.ItemWeapon, indexToRemove)
 		if err != nil {
 			return
 		}

@@ -40,20 +40,86 @@ func (r *Render) drawMenu() {
 }
 
 func (r *Render) handleMenuInput(ev *tcell.EventKey) {
+	if !r.showMenu {
+		return
+	}
+
 	switch ev.Key() {
 	case tcell.KeyEscape:
-		r.toggleMenu()
+		r.showMenu = false
+
 	case tcell.KeyUp:
 		r.menuIndex = (r.menuIndex - 1 + len(r.menuItems)) % len(r.menuItems)
+
 	case tcell.KeyDown:
 		r.menuIndex = (r.menuIndex + 1) % len(r.menuItems)
+
 	case tcell.KeyEnter:
-		r.executeMenuAction()
+		r.executePauseMenuAction()
 	}
 }
 
+func (r *Render) executePauseMenuAction() {
+	if r.menuIndex < 0 || r.menuIndex >= len(r.menuItems) {
+		return
+	}
+
+	item := r.menuItems[r.menuIndex]
+
+	switch item {
+	case "Продолжить":
+		r.showMenu = false
+		return
+
+	case "Инвентарь":
+		r.showMenu = false
+		r.toggleInventory()
+		return
+
+	case "Статистика":
+		r.showMenu = false
+		r.showStats = true
+		r.statsFromMain = false
+		return
+
+	case "Новая игра":
+		if r.gameRoot == nil {
+			r.messages = append(r.messages, "Ошибка: gameRoot == nil")
+			return
+		}
+		session, err := r.gameRoot.StartNewGame("Player")
+		if err != nil {
+			r.messages = append(r.messages, "Не удалось начать новую игру: "+err.Error())
+			return
+		}
+		r.applySession(session)
+		return
+
+	case "Загрузить":
+		if r.gameRoot == nil {
+			r.messages = append(r.messages, "Ошибка: gameRoot == nil")
+			return
+		}
+		if !r.gameRoot.HasSavedGame() {
+			r.messages = append(r.messages, "Сохранение не найдено")
+			return
+		}
+		session, err := r.gameRoot.LoadLastGame()
+		if err != nil {
+			r.messages = append(r.messages, "Не удалось загрузить: "+err.Error())
+			return
+		}
+		r.applySession(session)
+		return
+
+	case "Выйти":
+		r.Stop()
+		return
+	}
+}
+
+
 func (r *Render) executeMenuAction() {
-	// Расширенное меню, если есть gameRoot
 	if r.gameRoot != nil {
 		switch r.menuIndex {
 		case 0: 
@@ -102,7 +168,6 @@ func (r *Render) executeMenuAction() {
 		return
 	}
 
-	// Обычное меню (без gameRoot)
 	switch r.menuIndex {
 	case 0: 
 		r.toggleMenu()

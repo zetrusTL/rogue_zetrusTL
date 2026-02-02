@@ -10,18 +10,13 @@ import (
 
 func main() {
 	repo, err := data.NewJsonRepository("data/files")
-		if err != nil {
-			panic(err)
-		}
-
-	game := implementation.NewGameImpl(repo)
-
-	session, err := game.StartNewGame("Player")
 	if err != nil {
 		panic(err)
 	}
 
-	r, err := render.NewRender(session, game, 120, 35)
+	game := implementation.NewGameImpl(repo)
+
+	r, err := render.NewRender(nil, game, 120, 35)
 	if err != nil {
 		panic(err)
 	}

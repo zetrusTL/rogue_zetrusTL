@@ -30,7 +30,7 @@ func (w *JsonPlayerWrapper) MarshalJSON() ([]byte, error) {
 	}
 	p := w.Player
 
-	activeBuffs := make([]entity.Buff, len(w.ActiveBuffs))
+	activeBuffs := make([]entity.Buff, 0, len(w.ActiveBuffs))
 	for _, buff := range w.ActiveBuffs {
 		activeBuffs = append(activeBuffs, *buff)
 	}
@@ -48,7 +48,7 @@ func (w *JsonPlayerWrapper) MarshalJSON() ([]byte, error) {
 	}
 
 	for t, items := range p.Backpack.Items {
-		var wrappers []jsonItemWrapper
+		wrappers := make([]jsonItemWrapper, 0)
 		for _, item := range items {
 			wrappers = append(wrappers, newItemWrapper(item))
 		}
@@ -64,14 +64,15 @@ func (w *JsonPlayerWrapper) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	activeBuffs := make([]*entity.Buff, 0)
-	for _, buff := range temp.ActiveBuffs {
-		activeBuffs = append(activeBuffs, &buff)
-	}
 	if w.Player == nil {
 		w.Player = &entity.Player{Backpack: entity.NewBackpack()}
 	}
 	p := w.Player
+
+	activeBuffs := make([]*entity.Buff, 0, len(temp.ActiveBuffs))
+	for i := range temp.ActiveBuffs {
+		activeBuffs = append(activeBuffs, &temp.ActiveBuffs[i])
+	}
 
 	p.CharacterStats = temp.CharacterStats
 	p.Weapon = temp.Weapon
@@ -79,10 +80,11 @@ func (w *JsonPlayerWrapper) UnmarshalJSON(data []byte) error {
 	p.Facing = temp.Facing
 	p.SleepTurns = temp.SleepTurns
 	p.Backpack.Gold = temp.Backpack.Gold
+
 	p.Backpack.Items = make(map[entity.ItemType][]entity.Item)
 
 	for t, wrappers := range temp.Backpack.Items {
-		var items []entity.Item
+		items := make([]entity.Item, 0)
 		for _, wrap := range wrappers {
 			item, err := wrap.unwrap()
 			if err != nil {
