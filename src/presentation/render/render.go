@@ -93,16 +93,31 @@ func (r *Render) Run() error {
 	
 	for r.running {
 		
-		if r.showMainMenu {
+	if r.showMainMenu {
+		if r.showStats {
+			r.drawStats() 
+			r.screen.Show()
+
+			ev := r.screen.PollEvent()
+			if key, ok := ev.(*tcell.EventKey); ok {
+				if key.Key() == tcell.KeyEscape {
+					r.showStats = false
+					r.statsFromMain = false
+				}
+			}
+			continue
+		}
+
 		r.drawMainMenu()
 		r.screen.Show()
+
 		ev := r.screen.PollEvent()
 		if key, ok := ev.(*tcell.EventKey); ok {
 			r.handleMainMenuInput(key)
 		}
-		time.Sleep(33 * time.Millisecond)
 		continue
-		}
+	}
+
 
 		r.screen.Clear()
 		r.draw()
@@ -485,7 +500,7 @@ func (r *Render) executeMainMenuAction() {
 		r.statsFromMain = true
 		return
 
-	case "Выйти":
+	case "Выйти","Выход", "Выйти из игры":
 		r.Stop()
 		return
 	}
@@ -507,3 +522,4 @@ func (r *Render) applySession(session presentation.GameSession) {
 	r.messages = nil
 }
 
+//handleMainMenuInput
